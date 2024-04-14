@@ -1,4 +1,5 @@
-import { Sequelize } from "sequelize-typescript";
+import { Sequelize } from 'sequelize-typescript';
+import { Productos } from '../model/productos.model';
 
 export const connection = new Sequelize({
     dialect: "mysql",
@@ -6,14 +7,19 @@ export const connection = new Sequelize({
     username: "root",
     password: "mysql",
     database: "Panaderia",
-    logging: false,
-    models: []
-})
+    logging: true,
+    models: [
+        Productos,
+    ],
+});
 
 async function connectionBD() {
     try {
-        await connection.sync()
+        await connection.sync();
+        console.log("Conexión a la base de datos establecida correctamente.");
     } catch (error) {
-        console.log("error: ", error)
+        console.error("Error al sincronizar modelos:", error);
     }
 }
+
+export default connectionBD;
