@@ -1,0 +1,21 @@
+# Ignorar el directorio node_modules y sus archivos
+node_modules/
+
+# Ignorar el archivo .env que contiene variables de entorno sensibles
+.env
+
+# Ignorar los archivos compilados o construidos
+/dist
+/build
+
+# Ignorar los archivos de cobertura generados por pruebas unitarias
+/coverage
+
+# Ignorar archivos de registro
+/logs
+
+# Ignorar archivos temporales
+/tmp
+
+# Ignorar archivos específicos
+*.log
