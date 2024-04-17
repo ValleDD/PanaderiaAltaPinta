@@ -1,6 +1,6 @@
-import { Column, Table, Model, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
+import { Column, Table, Model, HasMany, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
 import { Usuario } from "./usuario.model";
-
+import { Detalles_Pedidos } from "./detallesPedidos.model";
 @Table({
     timestamps: false,
     tableName: "pedidos"
@@ -32,4 +32,7 @@ export class Pedidos extends Model{
         allowNull: false
     })
     estado!: string;
+
+    @HasMany(() => Detalles_Pedidos)
+    detallesPedidos!: Detalles_Pedidos[];
 }
