@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
-import { Detalles_Pedidos } from "../model/detallesPedidos.model";
+import { Detalles_Pedidos } from "../model/detalles_Pedidos.model";
 
-export const distardetailsorder: RequestHandler = async (req, res) => {
+export const listardetailsorder: RequestHandler = async (req, res) => {
     try {
         const detallesPedidos = await Detalles_Pedidos.findAll();
         return res.status(200).json(detallesPedidos);

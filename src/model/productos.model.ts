@@ -1,45 +1,48 @@
-
-
 import { Column, Table, Model, DataType,ForeignKey, BelongsTo } from "sequelize-typescript";
 import { Usuario } from "./usuario.model";
+import { Sequelize } from "sequelize";
+
+
 
 @Table({
     timestamps: false,
     tableName: "productos"
 })
-
-export class Productos extends Model{
+export class Productos extends Model {
     @Column({
-        type: DataType.STRING,
+        type: DataType.INTEGER,
         primaryKey: true,
         autoIncrement: true
     })
     idProducto!: number;
+
     @Column({
         type: DataType.STRING,
         allowNull: false
     })
     Nombre!: string;
+
     @Column({
         type: DataType.STRING,
         allowNull: false
     })
     descripcion!: string;
+
     @Column({
-        type: DataType.DECIMAL(10,2),
+        type: DataType.DECIMAL(10, 2),
         allowNull: false
     })
     precio!: number;
+
+    
+    @ForeignKey(() => Usuario)
     @Column({
         type: DataType.INTEGER,
-        allowNull: false
+        allowNull: false,
+        field: 'idUsuario' // Nombre real de la columna en la base de datos
     })
-    cantidad_disponible!: number;
+    idUsuario!: number;
 
-    @ForeignKey(() => Usuario) // Define la clave externa para la relación
-    @Column
-    panadero_id!: number;
-
-    @BelongsTo(() => Usuario) // Define la relación con el modelo de Usuario
+    @BelongsTo(() => Usuario, 'idUsuario')
     panadero!: Usuario;
 }

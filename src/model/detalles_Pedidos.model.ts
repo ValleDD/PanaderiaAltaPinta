@@ -6,7 +6,6 @@ import { Productos } from "./productos.model";
     timestamps: false,
     tableName: "detalles_pedidos"
 })
-
 export class Detalles_Pedidos extends Model{
     @Column({
         type: DataType.INTEGER,
@@ -15,18 +14,24 @@ export class Detalles_Pedidos extends Model{
     })
     idDetalles_Pedido!: number;
 
-    @ForeignKey(() => Pedidos) // Define la clave externa para la relación con Pedidos
-    @Column
+    @ForeignKey(() => Pedidos)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false
+    })
     pedido_id!: number;
 
-    @BelongsTo(() => Pedidos) // Define la relación con el modelo de Pedidos
+    @BelongsTo(() => Pedidos)
     pedido!: Pedidos;
 
-    @ForeignKey(() => Productos) // Define la clave externa para la relación con Productos
-    @Column
-    producto_id!: number;
+    @ForeignKey(() => Productos)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false
+    })
+    idProducto!: number;
 
-    @BelongsTo(() => Productos) // Define la relación con el modelo de Productos
+    @BelongsTo(() => Productos)
     producto!: Productos;
 
     @Column({
@@ -35,3 +40,4 @@ export class Detalles_Pedidos extends Model{
     })
     cantidad!: number;
 }
+

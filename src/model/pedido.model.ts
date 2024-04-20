@@ -1,12 +1,11 @@
-import { Column, Table, Model, HasMany, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
+import { Column, Table, Model, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
 import { Usuario } from "./usuario.model";
-import { Detalles_Pedidos } from "./detallesPedidos.model";
+
 @Table({
     timestamps: false,
     tableName: "pedidos"
 })
-
-export class Pedidos extends Model{
+export class Pedidos extends Model {
     @Column({
         type: DataType.INTEGER,
         primaryKey: true,
@@ -14,11 +13,14 @@ export class Pedidos extends Model{
     })
     idPedidos!: number;
 
-    @ForeignKey(() => Usuario) // Define la clave externa para la relación con Usuario
-    @Column
+    @ForeignKey(() => Usuario)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false
+    })
     cliente_id!: number;
 
-    @BelongsTo(() => Usuario) // Define la relación con el modelo de Usuario
+    @BelongsTo(() => Usuario)
     cliente!: Usuario;
 
     @Column({
@@ -32,7 +34,5 @@ export class Pedidos extends Model{
         allowNull: false
     })
     estado!: string;
-
-    @HasMany(() => Detalles_Pedidos)
-    detallesPedidos!: Detalles_Pedidos[];
 }
+
