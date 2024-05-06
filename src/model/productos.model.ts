@@ -1,8 +1,5 @@
-import { Column, Table, Model, DataType,ForeignKey, BelongsTo } from "sequelize-typescript";
+import { Column, Table, Model, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
 import { Usuario } from "./usuario.model";
-import { Sequelize } from "sequelize";
-
-
 
 @Table({
     timestamps: false,
@@ -34,7 +31,12 @@ export class Productos extends Model {
     })
     precio!: number;
 
-    
+    @Column({
+        type: DataType.STRING, // Tipo de datos para la imagen, puede variar según tu base de datos
+        allowNull: true // Permitir que la imagen sea opcional
+    })
+    imagenURL!: string; // Columna para almacenar la URL de la imagen
+
     @ForeignKey(() => Usuario)
     @Column({
         type: DataType.INTEGER,
@@ -46,3 +48,4 @@ export class Productos extends Model {
     @BelongsTo(() => Usuario, 'idUsuario')
     panadero!: Usuario;
 }
+
