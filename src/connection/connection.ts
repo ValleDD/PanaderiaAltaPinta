@@ -1,5 +1,8 @@
 import { Sequelize } from 'sequelize-typescript';
 import { Productos } from '../model/productos.model';
+import { Usuario } from '../model/usuario.model';
+import { Pedidos } from '../model/pedido.model';
+import { Detalles_Pedidos } from '../model/detalles_Pedidos.model';
 
 export const connection = new Sequelize({
     dialect: "mysql",
@@ -10,6 +13,9 @@ export const connection = new Sequelize({
     logging: true,
     models: [
         Productos,
+        Usuario,
+        Pedidos,
+        Detalles_Pedidos
     ],
 });
 

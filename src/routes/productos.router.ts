@@ -1,11 +1,12 @@
 import { Router } from "express"
-import { listar, crear, eliminar } from "../controllers/productos.controller"
+import { ProductList, CreateProducts, DeleteProduct } from "../controllers/productos.controller"
+
 
 const productRouter = Router()
 
-productRouter.get('/lista', listar)
+productRouter.get('/lista', ProductList)
 
-productRouter.post('/crea', crear)
-productRouter.delete('/eliminar/:idProducto', eliminar)
+productRouter.post('/crea', CreateProducts)
+productRouter.delete('/eliminar/:idProducto', DeleteProduct)
 
 export default productRouter

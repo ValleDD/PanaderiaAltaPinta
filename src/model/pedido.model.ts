@@ -5,8 +5,7 @@ import { Usuario } from "./usuario.model";
     timestamps: false,
     tableName: "pedidos"
 })
-
-export class Pedidos extends Model{
+export class Pedidos extends Model {
     @Column({
         type: DataType.INTEGER,
         primaryKey: true,
@@ -14,11 +13,14 @@ export class Pedidos extends Model{
     })
     idPedidos!: number;
 
-    @ForeignKey(() => Usuario) // Define la clave externa para la relación con Usuario
-    @Column
+    @ForeignKey(() => Usuario)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false
+    })
     cliente_id!: number;
 
-    @BelongsTo(() => Usuario) // Define la relación con el modelo de Usuario
+    @BelongsTo(() => Usuario)
     cliente!: Usuario;
 
     @Column({
@@ -33,3 +35,4 @@ export class Pedidos extends Model{
     })
     estado!: string;
 }
+
