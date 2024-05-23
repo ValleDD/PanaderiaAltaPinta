@@ -1,10 +1,13 @@
 import { Router } from "express";
-import { listarUsuarios, crearUsuario,eliminarUsuario } from "../controllers/usuarios.controller";
+import {  createUser, deleteUser, listUsers, loginUser} from "../controllers/usuarios.controller";
 
 const usuarioRouter = Router();
 
-usuarioRouter.get('/lista', listarUsuarios);
-usuarioRouter.post('/crear', crearUsuario);
-usuarioRouter.delete('/eliminar/:idUsuario', eliminarUsuario);
+usuarioRouter.get('/lista', listUsers);
+usuarioRouter.post('/crear', createUser);
+usuarioRouter.delete('/eliminar/:idUsuario', deleteUser);
+usuarioRouter.post('/login', loginUser); // Ruta pública
+usuarioRouter.post('/register', createUser);
+
 
 export default usuarioRouter;

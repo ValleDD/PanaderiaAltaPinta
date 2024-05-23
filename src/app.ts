@@ -6,6 +6,8 @@ import connectionBD from "./connection/connection";
 
 import productRouter from "./routes/productos.router";
 import usuarioRouter from "./routes/usuarios.router";
+import pedidoRouter from "./routes/pedido.router";
+import detallePedidoRouter from "./routes/detallePedido.router";
 
 const app = express();
 
@@ -28,5 +30,7 @@ app.get("/api", (req, res) =>{res.json("paanderia alta pinta")})
 
 app.use("/api/product",productRouter)
 app.use("/api/user",usuarioRouter)
+app.use("/api/pedido", pedidoRouter)
+app.use("api/detalle",detallePedidoRouter)
 export default app
 
