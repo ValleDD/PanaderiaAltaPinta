@@ -1,3 +1,4 @@
+
 import { Column, Table, Model, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
 import { Usuario } from "./usuario.model";
 
@@ -35,4 +36,3 @@ export class Pedidos extends Model {
     })
     estado!: string;
 }
-

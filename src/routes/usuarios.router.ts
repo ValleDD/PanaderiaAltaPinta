@@ -3,9 +3,9 @@ import {  createUser, deleteUser, listUsers, loginUser} from "../controllers/usu
 
 const usuarioRouter = Router();
 
-usuarioRouter.get('/lista', listUsers);
-usuarioRouter.post('/crear', createUser);
-usuarioRouter.delete('/eliminar/:idUsuario', deleteUser);
+usuarioRouter.get('/list', listUsers);
+usuarioRouter.post('/create', createUser);
+usuarioRouter.delete('/delete/:idUsuario', deleteUser);
 usuarioRouter.post('/login', loginUser); // Ruta pública
 usuarioRouter.post('/register', createUser);
 
