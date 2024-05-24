@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { Productos } from "../model/productos.model";
-import fs from "fs/promises"; // Usar las versiones de promesas de fs
+import fs from "fs/promises"; // Using promises version of fs
 import path from "path";
-import multer from "multer"; // para el manejo de cargar archivos
+import multer from "multer"; // for handling file uploads
 
-// Middleware de multer para cargar archivos
+// Multer middleware for file upload
 const upload = multer({
-    dest: path.join(__dirname, "../public/"),
-    limits: { fileSize: 2 * 1024 * 1024 }, // Limitar el tamaño del archivo a 2MB
+    dest: path.join(__dirname, "../public/uploads"), // Destination folder for file uploads
+    limits: { fileSize: 2 * 1024 * 1024 }, // Limit file size to 2MB
     fileFilter: (req, file, cb) => {
         const filetypes = /jpeg|jpg|png|gif/;
         const mimetype = filetypes.test(file.mimetype);
@@ -17,30 +17,28 @@ const upload = multer({
         }
         cb(new Error("Error: File upload only supports the following filetypes - " + filetypes));
     }
-}).single('imagen'); // Asumiendo que el campo del archivo se llama 'imagen'
+}).single('imagen'); // Assuming the file field is named 'imagen'
 
-// Controlador para listar todos los productos
-export const productList = async (req:any, res:any) => {
+// Controller to list all products
+export const productList = async (req: any, res: any) => {
     try {
         const productos = await Productos.findAll();
-        // Asegurarse de que cada producto tenga un id válido
+        // Ensure each product has a valid id
         const productosConId = productos.map((producto, index) => {
-            const plainProduct = producto.toJSON(); // Convertir a un objeto plano si es necesario
+            const plainProduct = producto.toJSON(); // Convert to plain object if necessary
             return {
                 ...plainProduct,
-                id: plainProduct.id ? plainProduct.id.toString() : index.toString(), // Asegurarse de que el id sea una cadena
+                id: plainProduct.id ? plainProduct.id.toString() : index.toString(), // Ensure id is a string
             };
         });
         return res.status(200).json(productosConId);
     } catch (error) {
-        console.error("Hubo un error al listar los productos:", error);
-        return res.status(500).json({ message: "Hubo un error al listar los productos" });
+        console.error("An error occurred while listing products:", error);
+        return res.status(500).json({ message: "An error occurred while listing products" });
     }
 };
 
-
-
-// Controlador para crear un nuevo producto
+// Controller to create a new product
 export const createProduct = async (req: Request, res: Response) => {
     upload(req, res, async (err: any) => {
         if (err) {
@@ -48,8 +46,8 @@ export const createProduct = async (req: Request, res: Response) => {
         }
 
         const { Nombre, descripcion, precio, tipo, idUsuario } = req.body;
-        if (!Nombre || !descripcion || !precio || !tipo|| !idUsuario ) {
-            return res.status(400).json({ message: "Todos los campos son requeridos" });
+        if (!Nombre || !descripcion || !precio || !tipo || !idUsuario) {
+            return res.status(400).json({ message: "All fields are required" });
         }
 
         try {
@@ -63,29 +61,23 @@ export const createProduct = async (req: Request, res: Response) => {
                 imagenURL = `/uploads/${nombreImagen}`;
             }
 
-            // Verificar que los campos obligatorios estén presentes en la solicitud
-            if (!Nombre || !descripcion || !precio || !tipo || !idUsuario) {
-                return res.status(400).json({ message: "Todos los campos son requeridos" });
-            }
-
             await Productos.create({ Nombre, descripcion, precio, imagenURL, tipo, idUsuario });
-            return res.status(201).json({ message: "Producto creado exitosamente" });
+            return res.status(201).json({ message: "Product created successfully" });
         } catch (error) {
-            console.error("Hubo un error al crear el producto:", error);
-            return res.status(500).json({ message: "Hubo un error al crear el producto" });
+            console.error("An error occurred while creating the product:", error);
+            return res.status(500).json({ message: "An error occurred while creating the product" });
         }
     });
 };
 
-
-// Controlador para eliminar un producto existente
+// Controller to delete an existing product
 export const deleteProduct = async (req: Request, res: Response) => {
     const { idProducto } = req.params;
 
     try {
         const producto = await Productos.findByPk(idProducto);
         if (!producto) {
-            return res.status(404).json({ message: "Producto no encontrado" });
+            return res.status(404).json({ message: "Product not found" });
         }
 
         if (producto.imagenURL) {
@@ -94,14 +86,14 @@ export const deleteProduct = async (req: Request, res: Response) => {
         }
 
         await producto.destroy();
-        return res.status(200).json({ message: "Producto eliminado exitosamente" });
+        return res.status(200).json({ message: "Product deleted successfully" });
     } catch (error) {
-        console.error("Hubo un error al eliminar el producto:", error);
-        return res.status(500).json({ message: "Hubo un error al eliminar el producto" });
+        console.error("An error occurred while deleting the product:", error);
+        return res.status(500).json({ message: "An error occurred while deleting the product" });
     }
 };
 
-// Controlador para modificar un producto existente
+// Controller to modify an existing product
 export const modifyProduct = async (req: Request, res: Response) => {
     upload(req, res, async (err: any) => {
         if (err) {
@@ -111,13 +103,13 @@ export const modifyProduct = async (req: Request, res: Response) => {
         const { idProducto } = req.params;
         const { Nombre, descripcion, precio } = req.body;
         if (!Nombre || !descripcion || !precio) {
-            return res.status(400).json({ message: "Todos los campos son requeridos" });
+            return res.status(400).json({ message: "All fields are required" });
         }
 
         try {
             const producto = await Productos.findByPk(idProducto);
             if (!producto) {
-                return res.status(404).json({ message: "Producto no encontrado" });
+                return res.status(404).json({ message: "Product not found" });
             }
 
             let imagenURL = producto.imagenURL || "";
@@ -137,33 +129,32 @@ export const modifyProduct = async (req: Request, res: Response) => {
             }
 
             await producto.update({ Nombre, descripcion, precio, imagenURL });
-            return res.status(200).json({ message: "Producto modificado exitosamente" });
+            return res.status(200).json({ message: "Product modified successfully" });
         } catch (error) {
-            console.error("Hubo un error al modificar el producto:", error);
-            return res.status(500).json({ message: "Hubo un error al modificar el producto" });
+            console.error("An error occurred while modifying the product:", error);
+            return res.status(500).json({ message: "An error occurred while modifying the product" });
         }
     });
 };
 
-
-// Controlador para listar los productos de tipo "dulce"
+// Controller to list "sweet" type products
 export const listSweets = async (req: Request, res: Response) => {
     try {
         const productos: Productos[] = await Productos.findAll({ where: { tipo: 'dulce' } });
         return res.status(200).json(productos);
     } catch (error) {
-        console.error("Hubo un error al listar los productos dulces:", error);
-        return res.status(500).json({ message: "Hubo un error al listar los productos dulces" });
+        console.error("An error occurred while listing sweet products:", error);
+        return res.status(500).json({ message: "An error occurred while listing sweet products" });
     }
 };
 
-// Controlador para listar los productos de tipo "salado"
+// Controller to list "salty" type products
 export const listSalty = async (req: Request, res: Response) => {
     try {
         const productos: Productos[] = await Productos.findAll({ where: { tipo: 'salado' } });
         return res.status(200).json(productos);
     } catch (error) {
-        console.error("Hubo un error al listar los productos salados:", error);
-        return res.status(500).json({ message: "Hubo un error al listar los productos salados" });
+        console.error("An error occurred while listing salty products:", error);
+        return res.status(500).json({ message: "An error occurred while listing salty products" });
     }
 };

@@ -3,41 +3,40 @@ import { Pedidos } from "./pedido.model";
 import { Productos } from "./productos.model";
 
 @Table({
-    timestamps: false,
-    tableName: "detalles_pedidos"
+    timestamps: false, // Disable timestamps for this table
+    tableName: "detalles_pedidos" // Set the table name
 })
-export class Detalles_Pedidos extends Model{
+export class Detalles_Pedidos extends Model {
     @Column({
         type: DataType.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+        primaryKey: true, // Define this column as the primary key
+        autoIncrement: true // Enable auto-increment for this column
     })
-    idDetalles_Pedido!: number;
+    idDetalles_Pedido!: number; // Define the type for the column
 
-    @ForeignKey(() => Pedidos)
+    @ForeignKey(() => Pedidos) // Define foreign key relationship with Pedidos table
     @Column({
         type: DataType.INTEGER,
-        allowNull: false
+        allowNull: false // Disallow null values for this column
     })
-    pedido_id!: number;
+    pedido_id!: number; // Define the type for the column
 
-    @BelongsTo(() => Pedidos)
-    pedido!: Pedidos;
+    @BelongsTo(() => Pedidos) // Define the association with the Pedidos model
+    pedido!: Pedidos; // Define the property to access the associated Pedido
 
-    @ForeignKey(() => Productos)
+    @ForeignKey(() => Productos) // Define foreign key relationship with Productos table
     @Column({
         type: DataType.INTEGER,
-        allowNull: false
+        allowNull: false // Disallow null values for this column
     })
-    idProducto!: number;
+    idProducto!: number; // Define the type for the column
 
-    @BelongsTo(() => Productos)
-    producto!: Productos;
+    @BelongsTo(() => Productos) // Define the association with the Productos model
+    producto!: Productos; // Define the property to access the associated Producto
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: false
+        allowNull: false // Disallow null values for this column
     })
-    cantidad!: number;
+    cantidad!: number; // Define the type for the column
 }
-

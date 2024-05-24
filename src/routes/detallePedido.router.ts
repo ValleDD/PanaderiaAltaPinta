@@ -1,16 +1,16 @@
 import express from "express";
 import { ListOrder, createOrder, deleteOrder } from "../controllers/pedido.controller";
 
-
 const detallePedidoRouter = express.Router();
 
-// Ruta para obtener todos los detalles de un pedido
-detallePedidoRouter.get("/lista", ListOrder);
+// Route to get all order details
+detallePedidoRouter.get("/list", ListOrder);
 
-// Ruta para crear un nuevo detalle de pedido
-detallePedidoRouter.post("/crear", createOrder);
+// Route to create a new order detail
+detallePedidoRouter.post("/create", createOrder);
 
-// Ruta para eliminar un detalle de pedido
-detallePedidoRouter.delete("/eliminar:idDetallePedido",deleteOrder);
+// Route to delete an order detail
+detallePedidoRouter.delete("/delete:idDetallePedido", deleteOrder);
 
 export default detallePedidoRouter;
+
