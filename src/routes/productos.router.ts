@@ -1,12 +1,25 @@
-import { Router } from "express"
-import { ProductList, CreateProducts, DeleteProduct } from "../controllers/productos.controller"
+import { Router } from "express";
+import { createProduct, deleteProduct, listSalty, listSweets, modifyProduct, productList } from "../controllers/productos.controller";
 
+const productRouter = Router();
 
-const productRouter = Router()
+// Route to get all products
+productRouter.get('/list', productList);
 
-productRouter.get('/lista', ProductList)
+// Route to create a new product
+productRouter.post('/create', createProduct);
 
-productRouter.post('/crea', CreateProducts)
-productRouter.delete('/eliminar/:idProducto', DeleteProduct)
+// Route to delete a product
+productRouter.delete('/delete/:idProducto', deleteProduct);
 
-export default productRouter
+// Route to modify a product
+productRouter.put('/modify/:idProducto', modifyProduct);
+
+// Route to get all sweet products
+productRouter.get('/dulce', listSweets);
+
+// Route to get all salty products
+productRouter.get('/salado', listSalty);
+
+export default productRouter;
+

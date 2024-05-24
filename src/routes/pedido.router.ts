@@ -3,13 +3,14 @@ import { ListOrder, createOrder, deleteOrder } from "../controllers/pedido.contr
 
 const pedidoRouter = express.Router();
 
+// Route to get all orders
+pedidoRouter.get("/list", ListOrder);
 
-pedidoRouter.get("/lista", ListOrder);
+// Route to create a new order
+pedidoRouter.post("/create", createOrder);
 
-
-pedidoRouter.post("/crear", createOrder);
-
-
-pedidoRouter.delete("/eliminar:idPedido", deleteOrder);
+// Route to delete an order
+pedidoRouter.delete("/delete:idPedido", deleteOrder);
 
 export default pedidoRouter;
+

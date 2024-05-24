@@ -2,76 +2,89 @@ import { RequestHandler } from "express";
 import { Usuario } from "../model/usuario.model";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { check, validationResult } from 'express-validator';
 
-// Controlador para listar todos los usuarios
+// Controller to list all users
 export const listUsers: RequestHandler = async (req, res) => {
     try {
-        // Buscar todos los usuarios en la base de datos
         const usuarios = await Usuario.findAll();
-        // Devolver una respuesta con los usuarios encontrados
         return res.status(200).json(usuarios);
     } catch (error) {
-        //Devueve un error 
-        return res.status(500).json({ message: "Hubo un error", error });
-    }
-};
-// Controlador para listar todos los usuarios
-export const createUser: RequestHandler = async (req, res) => {
-    try {
-        // Crear un nuevo usuario con la información proporcionada en el cuerpo de la solicitud
-        await Usuario.create({ ...req.body });
-        //Devuelve un mensaje con usuario creado
-        return res.status(200).json({ message: "Usuario creado" });
-    } catch (error) {
-        //Devuelve un error 
-        return res.status(500).json({ message: "Hubo un error", error });
+        return res.status(500).json({ message: "An error occurred", error });
     }
 };
 
-// Controlador para eliminar un usuarios
+// Validation middleware
+export const validateUserCreation = [
+    check('correo_electronico').isEmail().withMessage('Invalid email'),
+    check('contrasena').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+];
+
+// Controller to create a new user
+export const createUser: RequestHandler = async (req, res) => {
+    const { nombre, correo_electronico, contrasena, rol } = req.body;
+
+    try {
+        // Check if the email is already registered
+        const existeUsuario = await Usuario.findOne({ where: { correo_electronico } });
+        if (existeUsuario) {
+            return res.status(400).json({ message: 'Email is already registered' });
+        }
+
+        // Validate the provided role
+        if (!['panadero', 'cliente'].includes(rol)) {
+            return res.status(400).json({ message: 'Provided role is not valid' });
+        }
+
+        // Create the new user
+        const nuevoUsuario = await Usuario.create({
+            nombre,
+            correo_electronico,
+            contrasena,
+            rol // Assign the role provided by the client
+        });
+
+        // Return successful response
+        return res.status(201).json({ message: 'User created successfully', usuario: nuevoUsuario });
+    } catch (error) {
+        console.error('Error creating user:', error);
+        return res.status(500).json({ message: 'An error occurred while creating the user', error });
+    }
+};
+
+// Controller to delete a user
 export const deleteUser: RequestHandler = async (req, res) => {
-    //Saca el idusuario de la peticion
     const { idUsuario } = req.params;
     try {
-        //Elimina el usuario de la base de datos
-        await Usuario.destroy({ where: { idUsuario: idUsuario } });
-        return res.status(200).json({ message: "Usuario eliminado" });
+        const result = await Usuario.destroy({ where: { idUsuario } });
+        if (result === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        return res.status(200).json({ message: "User deleted" });
     } catch (error) {
-        //Devuelve el error que no se ha podido eliminar usuario
-        return res.status(500).json({ message: "Hubo un error", error });
+        return res.status(500).json({ message: "An error occurred", error });
     }
 };
-// Controlador para login de usuario
+
+// Controller to log in a user
 export const loginUser: RequestHandler = async (req, res) => {
-    //Saca de la peticion el correo y la contraseña
     const { correo_electronico, contrasena } = req.body;
     try {
-        //Busca al usuario por el correo electronico
         const usuario = await Usuario.findOne({ where: { correo_electronico } });
         if (!usuario) {
-            //manda error con usuario no encontrado 
-            return res.status(404).json({ message: 'Usuario no encontrado' });
+            return res.status(404).json({ message: 'User not found' });
         }
-        // Comparar la contraseña proporcionada con la almacenada en la base de datos
-        const isPasswordValid = await bcrypt.compare(contrasena, usuario.contrasena);
+        const isPasswordValid = await usuario.validarContrasena(contrasena);
         if (!isPasswordValid) {
-            // Si la contraseña es incorrecta, devolver un error
-            return res.status(401).json({ message: 'Contraseña incorrecta' });
+            return res.status(401).json({ message: 'Incorrect password' });
         }
-
         const token = jwt.sign(
-            // Payload del token con el ID y correo electrónico del usuario
             { id: usuario.idUsuario, email: usuario.correo_electronico },
-             // Clave secreta para firmar el token (debería ser una clave secreta real en producción)
-            'your_jwt_secret',
-            // Expiración del token después de 1 hora
+            process.env.JWT_SECRET || 'your_jwt_secret',
             { expiresIn: '1h' }
         );
-         // Devolver un mensaje de éxito y el token JWT
-        return res.status(200).json({ message: 'Login exitoso', token });
+        return res.status(200).json({ message: 'Login successful', token });
     } catch (error) {
-         // Devolver un mensaje de error 
-        return res.status(500).json({ message: 'Hubo un error', error });
+        return res.status(500).json({ message: 'An error occurred', error });
     }
 };
-
