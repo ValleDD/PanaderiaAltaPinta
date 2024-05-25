@@ -71,6 +71,7 @@ export const createProduct = async (req: Request, res: Response) => {
 };
 
 // Controller to delete an existing product
+// Controller to delete an existing product
 export const deleteProduct = async (req: Request, res: Response) => {
     const { idProducto } = req.params;
 
@@ -92,6 +93,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "An error occurred while deleting the product" });
     }
 };
+
 
 // Controller to modify an existing product
 export const modifyProduct = async (req: Request, res: Response) => {

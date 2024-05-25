@@ -1,5 +1,8 @@
-import { Column, Table, Model, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
+import { Column, Table, Model, DataType, ForeignKey, BelongsTo, HasMany } from "sequelize-typescript";
 import { Usuario } from "./usuario.model"; // Import the Usuario model
+import { Detalles_Pedidos } from "./detalles_Pedidos.model";
+
+
 
 @Table({
     timestamps: false, // Disable timestamps for this table
@@ -34,4 +37,8 @@ export class Pedidos extends Model {
         allowNull: false // Disallow null values for this column
     })
     estado!: string; // Define the type for the column
+
+    @HasMany(() => Detalles_Pedidos) // Define the association with Detalles_Pedidos model
+    detalles!: Detalles_Pedidos[]; // Define the property to access associated Detalles_Pedidos
 }
+

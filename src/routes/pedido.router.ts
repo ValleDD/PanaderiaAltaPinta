@@ -1,5 +1,5 @@
 import express from "express";
-import { ListOrder, createOrder, deleteOrder } from "../controllers/pedido.controller";
+import { ListOrder, createOrder, deleteOrder, getPedidoById } from "../controllers/pedido.controller";
 
 const pedidoRouter = express.Router();
 
@@ -11,6 +11,9 @@ pedidoRouter.post("/create", createOrder);
 
 // Route to delete an order
 pedidoRouter.delete("/delete:idPedido", deleteOrder);
+
+// Route to get a pedido by id with details and products
+pedidoRouter.get('/:id', getPedidoById);
 
 export default pedidoRouter;
 
