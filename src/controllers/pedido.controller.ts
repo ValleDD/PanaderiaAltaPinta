@@ -1,82 +1,42 @@
-import { RequestHandler } from "express";
-import { Pedidos } from "../model/pedido.model";
+import { Pedido } from "../model/pedido.model";
 import { Request, Response } from 'express';
-import { Detalles_Pedidos } from "../model/detalles_Pedidos.model";
-import { Productos } from "../model/productos.model";
-import { connection } from "../connection/connection";
 
-
-
-// Request handler to list all orders
-export const ListOrder: RequestHandler = async (req, res) => {
+// Controlador para crear un pedido
+export async function crearPedido(req: Request, res: Response) {
     try {
-        const order = await Pedidos.findAll(); // Fetch all orders
-        return res.status(200).json(order); // Return the orders as JSON
+        const pedido = await Pedido.create(req.body);
+        res.status(201).json(pedido);
     } catch (error) {
-        return res.status(500).json({ message: "An error occurred", error }); // Handle error
+        res.status(400).json({ message: error });
     }
-};
-
-
-
-
-// Request handler to create a new order with details
-
-interface DetallePedido {
-    idProducto: number;
-    cantidad: number;
 }
 
-export const createOrder: RequestHandler = async (req, res) => {
-    const { detalles, ...pedidoData } = req.body;
-
+// Controlador para eliminar un pedido
+export async function eliminarPedido(req: Request, res: Response) {
     try {
-        await connection.transaction(async (t) => {
-            const pedido = await Pedidos.create(pedidoData, { transaction: t });
-
-            const detallesConIdPedido = (detalles as DetallePedido[]).map((detalle) => ({
-                ...detalle,
-                pedido_id: pedido.id // Asignar el ID del pedido a cada detalle
-            }));
-
-            await Detalles_Pedidos.bulkCreate(detallesConIdPedido, { transaction: t });
-        });
-
-        return res.status(200).json({ message: "Order and details created successfully" });
+        const pedido = await Pedido.findByPk(req.params.id);
+        if (!pedido) throw new Error('Pedido no encontrado');
+        
+        await pedido.destroy();
+        res.status(204).end();
     } catch (error) {
-        return res.status(500).json({ message: "An error occurred", error });
+        res.status(404).json({ message: error });
     }
-};
-
-
-
-// Request handler to delete an order
-export const deleteOrder: RequestHandler = async (req, res) => {
-    const { idPedido } = req.params; // Extract the order ID from request parameters
+}
+// Controlador para rehacer un pedido
+export async function rehacerPedido(req: Request, res: Response) {
+    // Lógica para recrear un pedido, por ejemplo, copiar los detalles de un pedido anterior y crear uno nuevo
+}
+// Controlador para ver todos los pedidos
+export async function verPedidos(req: Request, res: Response) {
     try {
-        await Pedidos.destroy({ where: { idPedidos: idPedido } }); // Delete the order
-        return res.status(200).json({ message: "Order deleted" }); // Return success message
-    } catch (error) {
-        return res.status(500).json({ message: "An error occurred", error }); // Handle error
-    }
-};
-// Function to get a pedido by id with details and products
-export const getPedidoById = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params; // Get the id from request params
-        const pedido = await Pedidos.findByPk(id, {
-            include: [{
-                model: Detalles_Pedidos,
-                include: [Productos]
-            }]
-        });
+        // Obtener todos los pedidos de la base de datos
+        const pedidos = await Pedido.findAll();
 
-        if (pedido) {
-            res.status(200).json(pedido);
-        } else {
-            res.status(404).json({ message: 'Pedido not found' });
-        }
+        // Devolver los pedidos como respuesta
+        res.status(200).json(pedidos);
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error', error });
+        // Manejar errores
+        res.status(500).json({ message: error });
     }
-};
+}

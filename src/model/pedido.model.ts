@@ -1,44 +1,41 @@
-import { Column, Table, Model, DataType, ForeignKey, BelongsTo, HasMany } from "sequelize-typescript";
-import { Usuario } from "./usuario.model"; // Import the Usuario model
-import { Detalles_Pedidos } from "./detalles_Pedidos.model";
-
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
+import { Usuario } from './usuario.model';
+import { Detalles_Pedidos } from './detalles_Pedidos.model';
 
 
 @Table({
-    timestamps: false, // Disable timestamps for this table
-    tableName: "pedidos" // Set the table name
+    timestamps: false,  // Desactiva createdAt y updatedAt
 })
-export class Pedidos extends Model {
+export class Pedido extends Model {
     @Column({
         type: DataType.INTEGER,
-        primaryKey: true, // Define this column as the primary key
-        autoIncrement: true // Enable auto-increment for this column
+        autoIncrement: true,
+        primaryKey: true,
     })
-    idPedidos!: number; // Define the type for the column
+    idPedido!: number;
 
-    @ForeignKey(() => Usuario) // Define foreign key relationship with Usuario table
+    @ForeignKey(() => Usuario)
     @Column({
         type: DataType.INTEGER,
-        allowNull: false // Disallow null values for this column
+        allowNull: false,
     })
-    cliente_id!: number; // Define the type for the column
-
-    @BelongsTo(() => Usuario) // Define the association with the Usuario model
-    cliente!: Usuario; // Define the property to access the associated Usuario
+    idCliente!: number;
 
     @Column({
         type: DataType.DATE,
-        defaultValue: DataType.NOW // Set the default value to the current date
+        defaultValue: DataType.NOW,
     })
-    fecha!: Date; // Define the type for the column
+    fecha!: Date;
 
     @Column({
         type: DataType.STRING(50),
-        allowNull: false // Disallow null values for this column
+        allowNull: false,
     })
-    estado!: string; // Define the type for the column
+    estado!: string;
 
-    @HasMany(() => Detalles_Pedidos) // Define the association with Detalles_Pedidos model
-    detalles!: Detalles_Pedidos[]; // Define the property to access associated Detalles_Pedidos
+    @BelongsTo(() => Usuario)
+    cliente!: Usuario;
+
+    @HasMany(() => Detalles_Pedidos)
+    detallesPedido!: Detalles_Pedidos[];
 }
-

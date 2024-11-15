@@ -1,61 +1,54 @@
+import { Table, Column, Model, DataType, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Usuario } from './usuario.model';
 
-import { Column, Table, Model, DataType, ForeignKey, BelongsTo, HasMany } from "sequelize-typescript";
-import { Usuario } from "./usuario.model"; // Import the Usuario model
-import { Detalles_Pedidos } from "./detalles_Pedidos.model";
+import { Detalles_Pedidos } from './detalles_Pedidos.model';
 
 @Table({
-    timestamps: false, // Disable timestamps for this table
-    tableName: "productos" // Set the table name
+    timestamps: false,  // Desactiva createdAt y updatedAt
 })
-export class Productos extends Model {
+export class Producto extends Model {
     @Column({
         type: DataType.INTEGER,
-        primaryKey: true, // Define this column as the primary key
-        autoIncrement: true // Enable auto-increment for this column
+        autoIncrement: true,
+        primaryKey: true,
     })
-    idProducto!: number; // Define the type for the column
+    idProducto!: number;
 
     @Column({
-        type: DataType.STRING,
-        allowNull: false // Disallow null values for this column
+        type: DataType.STRING(100),
+        allowNull: false,
     })
-    Nombre!: string; // Define the type for the column
+    nombre!: string;
 
     @Column({
-        type: DataType.STRING,
-        allowNull: false // Disallow null values for this column
+        type: DataType.TEXT,
     })
-    descripcion!: string; // Define the type for the column
+    descripcion!: string;
 
     @Column({
         type: DataType.DECIMAL(10, 2),
-        allowNull: false // Disallow null values for this column
+        allowNull: false,
     })
-    precio!: number; // Define the type for the column
+    precio!: number;
 
     @Column({
-        type: DataType.STRING, 
-        allowNull: true // Allow null values for this column
+        type: DataType.STRING(255),
     })
-    imagenURL!: string; // Define the type for the column
+    imagenUrl!: string;
 
-    @ForeignKey(() => Usuario) // Define foreign key relationship with Usuario table
+    @ForeignKey(() => Usuario)
     @Column({
         type: DataType.INTEGER,
-        allowNull: false, // Disallow null values for this column
-        field: 'idUsuario' // Specify the field name in the database
+        allowNull: false,
     })
-    idUsuario!: number; // Define the type for the column
-
-    @BelongsTo(() => Usuario, 'idUsuario') // Define the association with the Usuario model
-    panadero!: Usuario; // Define the property to access the associated Usuario
+    idUsuario!: number;
 
     @Column({
         type: DataType.ENUM('dulce', 'salado'),
-        allowNull: false // Disallow null values for this column
+        allowNull: false,
     })
-    tipo!: 'dulce' | 'salado'; // Define the type for the column
+    tipo!: 'dulce' | 'salado';
 
-    @HasMany(() => Detalles_Pedidos) // Define the association with Detalles_Pedidos model
-    detalles!: Detalles_Pedidos[]; // Define the property to access associated Detalles_Pedidos
+    @HasMany(() => Detalles_Pedidos)
+    detallesPedido!: Detalles_Pedidos[];
 }

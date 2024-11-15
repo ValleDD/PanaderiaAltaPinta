@@ -1,44 +1,42 @@
-import { Column, Table, Model, DataType, ForeignKey, BelongsTo, HasMany } from "sequelize-typescript";
-import { Pedidos } from "./pedido.model";
-import { Productos } from "./productos.model";
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Pedido } from './pedido.model';
+import { Producto } from './productos.model';
+
 
 @Table({
-    timestamps: false, // Deshabilita los timestamps para esta tabla
-    tableName: "detalles_pedidos" // Establece el nombre de la tabla
+    timestamps: false,  // Desactiva createdAt y updatedAt
 })
 export class Detalles_Pedidos extends Model {
     @Column({
         type: DataType.INTEGER,
-        primaryKey: true, // Define esta columna como la clave primaria
-        autoIncrement: true, // Habilita el autoincremento para esta columna
-        allowNull: false, // No permitir valores nulos para esta columna
-        defaultValue: DataType.INTEGER // Modifica el valor predeterminado para que sea NULL
+        autoIncrement: true,
+        primaryKey: true,
     })
-    idDetalles_Pedido!: number; // Define el tipo para la columna
+    idDetallePedido!: number;
 
-    @ForeignKey(() => Pedidos) // Define la relación de clave externa con la tabla Pedidos
+    @ForeignKey(() => Pedido)
     @Column({
         type: DataType.INTEGER,
-        allowNull: false // No permitir valores nulos para esta columna
+        allowNull: false,
     })
-    pedido_id!: number; // Define el tipo para la columna
+    idPedido!: number;
 
-    @BelongsTo(() => Pedidos) // Define la asociación con el modelo Pedidos
-    pedido!: Pedidos; // Define la propiedad para acceder al Pedido asociado
-
-    @ForeignKey(() => Productos) // Define la relación de clave externa con la tabla Productos
+    @ForeignKey(() => Producto)
     @Column({
         type: DataType.INTEGER,
-        allowNull: false // No permitir valores nulos para esta columna
+        allowNull: false,
     })
-    idProducto!: number; // Define el tipo para la columna
-
-    @BelongsTo(() => Productos) // Define la asociación con el modelo Productos
-    producto!: Productos; // Define la propiedad para acceder al Producto asociado
+    idProducto!: number;
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: false // No permitir valores nulos para esta columna
+        allowNull: false,
     })
-    cantidad!: number; // Define el tipo para la columna
+    cantidad!: number;
+
+    @BelongsTo(() => Pedido)
+    pedido!: Pedido;
+
+    @BelongsTo(() => Producto)
+    producto!: Producto;
 }
