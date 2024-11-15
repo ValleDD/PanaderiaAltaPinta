@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
-import { Productos } from '../model/productos.model';
+import { Producto } from '../model/productos.model';
 import { Usuario } from '../model/usuario.model';
-import { Pedidos } from '../model/pedido.model';
+import { Pedido, } from '../model/pedido.model';
 import { Detalles_Pedidos } from '../model/detalles_Pedidos.model';
 
 export const connection = new Sequelize({
@@ -12,9 +12,9 @@ export const connection = new Sequelize({
     database: "Panaderia",
     logging: true,
     models: [
-        Productos,
+        Producto,
         Usuario,
-        Pedidos,
+        Pedido,
         Detalles_Pedidos
     ],
 });

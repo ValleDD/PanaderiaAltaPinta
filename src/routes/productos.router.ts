@@ -1,25 +1,22 @@
-import { Router } from "express";
-import { createProduct, deleteProduct, listSalty, listSweets, modifyProduct, productList } from "../controllers/productos.controller";
+import express from 'express';
+import { actualizarProducto, crearProducto, eliminarProducto,  verProductos, verProductosDulces, verProductosSalados } from '../controllers/productos.controller';
 
-const productRouter = Router();
 
-// Route to get all products
-productRouter.get('/list', productList);
+const productoRouter = express.Router();
 
-// Route to create a new product
-productRouter.post('/create', createProduct);
+// Ruta para listar todos los productos, con posibilidad de filtrar por tipo
+productoRouter.get("/list", verProductos);
 
-// Route to delete a product
-productRouter.delete('/delete/:idProducto', deleteProduct);
+// Ruta para crear un producto
+productoRouter.post("/create", crearProducto);
 
-// Route to modify a product
-productRouter.put('/modify/:idProducto', modifyProduct);
+// Ruta para actualizar un producto
+productoRouter.put("/update/:id", actualizarProducto);
 
-// Route to get all sweet products
-productRouter.get('/dulce', listSweets);
+// Ruta para eliminar un producto
+productoRouter.delete("/delete/:id", eliminarProducto);
 
-// Route to get all salty products
-productRouter.get('/salado', listSalty);
+productoRouter.get("/dulce", verProductosDulces);
+productoRouter.get("/salado", verProductosSalados);
 
-export default productRouter;
-
+export default productoRouter;

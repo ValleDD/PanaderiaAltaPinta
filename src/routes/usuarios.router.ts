@@ -1,22 +1,20 @@
 import { Router } from "express";
-import {  createUser, deleteUser, listUsers, loginUser } from "../controllers/usuarios.controller";
+import { eliminarUsuario, iniciarSesion, listarUsuarios, registrarUsuario } from "../controllers/usuarios.controller";
+
 
 const usuarioRouter = Router();
-
-// Route to get all users
-usuarioRouter.get('/list', listUsers);
+usuarioRouter.get('/list', listarUsuarios);
 
 // Route to create a new user
-usuarioRouter.post('/create', createUser);
+usuarioRouter.post('/registre', registrarUsuario);
 
 // Route to delete a user
-usuarioRouter.delete('/delete/:idUsuario', deleteUser);
+usuarioRouter.delete('/delete/:idUsuario', eliminarUsuario);
 
 // Route to login (public route)
-usuarioRouter.post('/login', loginUser);
+usuarioRouter.post('/login', iniciarSesion);
 
-// Route to register (create a new user), duplicate with '/create' route
-usuarioRouter.post('/register', createUser);
+
 
 export default usuarioRouter;
 

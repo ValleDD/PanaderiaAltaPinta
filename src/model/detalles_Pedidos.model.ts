@@ -1,42 +1,42 @@
-import { Column, Table, Model, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
-import { Pedidos } from "./pedido.model";
-import { Productos } from "./productos.model";
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Pedido } from './pedido.model';
+import { Producto } from './productos.model';
+
 
 @Table({
-    timestamps: false, // Disable timestamps for this table
-    tableName: "detalles_pedidos" // Set the table name
+    timestamps: false,  // Desactiva createdAt y updatedAt
 })
 export class Detalles_Pedidos extends Model {
     @Column({
         type: DataType.INTEGER,
-        primaryKey: true, // Define this column as the primary key
-        autoIncrement: true // Enable auto-increment for this column
+        autoIncrement: true,
+        primaryKey: true,
     })
-    idDetalles_Pedido!: number; // Define the type for the column
+    idDetallePedido!: number;
 
-    @ForeignKey(() => Pedidos) // Define foreign key relationship with Pedidos table
+    @ForeignKey(() => Pedido)
     @Column({
         type: DataType.INTEGER,
-        allowNull: false // Disallow null values for this column
+        allowNull: false,
     })
-    pedido_id!: number; // Define the type for the column
+    idPedido!: number;
 
-    @BelongsTo(() => Pedidos) // Define the association with the Pedidos model
-    pedido!: Pedidos; // Define the property to access the associated Pedido
-
-    @ForeignKey(() => Productos) // Define foreign key relationship with Productos table
+    @ForeignKey(() => Producto)
     @Column({
         type: DataType.INTEGER,
-        allowNull: false // Disallow null values for this column
+        allowNull: false,
     })
-    idProducto!: number; // Define the type for the column
-
-    @BelongsTo(() => Productos) // Define the association with the Productos model
-    producto!: Productos; // Define the property to access the associated Producto
+    idProducto!: number;
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: false // Disallow null values for this column
+        allowNull: false,
     })
-    cantidad!: number; // Define the type for the column
+    cantidad!: number;
+
+    @BelongsTo(() => Pedido)
+    pedido!: Pedido;
+
+    @BelongsTo(() => Producto)
+    producto!: Producto;
 }

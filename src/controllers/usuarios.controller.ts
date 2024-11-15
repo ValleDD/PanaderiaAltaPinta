@@ -1,90 +1,84 @@
-import { RequestHandler } from "express";
 import { Usuario } from "../model/usuario.model";
-import bcrypt from 'bcrypt';
+import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { check, validationResult } from 'express-validator';
+import bcrypt from 'bcrypt';
 
-// Controller to list all users
-export const listUsers: RequestHandler = async (req, res) => {
+
+// Controlador para registrarse como usuario
+export async function registrarUsuario(req: Request, res: Response) {
     try {
-        const usuarios = await Usuario.findAll();
-        return res.status(200).json(usuarios);
-    } catch (error) {
-        return res.status(500).json({ message: "An error occurred", error });
-    }
-};
+        // Obtener la contraseña del cuerpo de la solicitud
+        const contraseña = req.body.contraseña;
 
-// Validation middleware
-export const validateUserCreation = [
-    check('correo_electronico').isEmail().withMessage('Invalid email'),
-    check('contrasena').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
-];
+        // Generar el hash de la contraseña
+        const hashContraseña = await bcrypt.hash(contraseña, 10);
 
-// Controller to create a new user
-export const createUser: RequestHandler = async (req, res) => {
-    const { nombre, correo_electronico, contrasena, rol } = req.body;
-
-    try {
-        // Check if the email is already registered
-        const existeUsuario = await Usuario.findOne({ where: { correo_electronico } });
-        if (existeUsuario) {
-            return res.status(400).json({ message: 'Email is already registered' });
-        }
-
-        // Validate the provided role
-        if (!['panadero', 'cliente'].includes(rol)) {
-            return res.status(400).json({ message: 'Provided role is not valid' });
-        }
-
-        // Create the new user
-        const nuevoUsuario = await Usuario.create({
-            nombre,
-            correo_electronico,
-            contrasena,
-            rol // Assign the role provided by the client
+        // Crear un nuevo usuario con la contraseña encriptada
+        const usuario = await Usuario.create({
+            ...req.body,
+            contraseña: hashContraseña
         });
 
-        // Return successful response
-        return res.status(201).json({ message: 'User created successfully', usuario: nuevoUsuario });
+        // Devolver el usuario creado como respuesta
+        res.status(201).json(usuario);
     } catch (error) {
-        console.error('Error creating user:', error);
-        return res.status(500).json({ message: 'An error occurred while creating the user', error });
+        res.status(400).json({ message: error });
     }
-};
+}
 
-// Controller to delete a user
-export const deleteUser: RequestHandler = async (req, res) => {
-    const { idUsuario } = req.params;
-    try {
-        const result = await Usuario.destroy({ where: { idUsuario } });
-        if (result === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        return res.status(200).json({ message: "User deleted" });
-    } catch (error) {
-        return res.status(500).json({ message: "An error occurred", error });
-    }
-};
 
-// Controller to log in a user
-export const loginUser: RequestHandler = async (req, res) => {
-    const { correo_electronico, contrasena } = req.body;
-    try {
-        const usuario = await Usuario.findOne({ where: { correo_electronico } });
-        if (!usuario) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        const isPasswordValid = await usuario.validarContrasena(contrasena);
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Incorrect password' });
-        }
-        const token = jwt.sign(
-            { id: usuario.idUsuario, email: usuario.correo_electronico },
-            process.env.JWT_SECRET || 'your_jwt_secret',
-            { expiresIn: '1h' }
-        );
-        return res.status(200).json({ message: 'Login successful', token });
-    } catch (error) {
-        return res.status(500).json({ message: 'An error occurred', error });
+
+export async function iniciarSesion(req: Request, res: Response) {
+  const { correo_electronico, contraseña } = req.body;
+
+  try {
+    console.log(`Iniciando sesión para: ${correo_electronico}`);
+
+    // Buscar al usuario por su correo electrónico en la base de datos
+    const usuario = await Usuario.findOne({ where: { correo_electronico } });
+
+    if (!usuario) {
+      console.log('Usuario no encontrado');
+      return res.status(401).json({ message: 'Credenciales incorrectas' });
     }
-};
+
+    const isPasswordValid = await bcrypt.compare(contraseña, usuario.contraseña);
+    if (!isPasswordValid) {
+      console.log('Contraseña incorrecta');
+      return res.status(401).json({ message: 'Credenciales incorrectas' });
+    }
+
+    // Generar un token de sesión
+    const token = jwt.sign({ idUsuario: usuario.idUsuario }, 'secreto', { expiresIn: '1h' });
+
+    console.log('Inicio de sesión exitoso');
+    // Devolver el token como respuesta
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error('Error del servidor:', error);
+    res.status(500).json({ message: error });
+  }
+}
+
+
+// Controlador para eliminar un usuario
+export async function eliminarUsuario(req: Request, res: Response) {
+    try {
+        const usuario = await Usuario.findByPk(req.params.id);
+        if (!usuario) throw new Error('Usuario no encontrado');
+        
+        await usuario.destroy();
+        res.status(204).end();
+    } catch (error) {
+        res.status(404).json({ message: error });
+    }
+}
+
+export async function listarUsuarios(req: Request, res: Response) {
+    try {
+        const usuarios = await Usuario.findAll();
+        res.status(200).json(usuarios);
+    } catch (error) {
+        res.status(500).json({ message: error });
+    }
+}

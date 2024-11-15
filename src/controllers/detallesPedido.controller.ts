@@ -1,33 +1,23 @@
-import { RequestHandler } from "express";
 import { Detalles_Pedidos } from "../model/detalles_Pedidos.model";
+import { Pedido } from "../model/pedido.model";
+import { Producto } from "../model/productos.model";
+import { Usuario } from "../model/usuario.model";
+import { Request, Response } from 'express';
 
-// Request handler to list all order details
-export const listDetailsorder: RequestHandler = async (req, res) => {
+// Controlador para obtener los pedidos con sus productos y el ID del usuario
+export async function obtenerPedidosConProductos(req: Request, res: Response) {
     try {
-        const detallesPedidos = await Detalles_Pedidos.findAll(); // Fetch all order details
-        return res.status(200).json(detallesPedidos); // Return the order details as JSON
+        const pedidos = await Pedido.findAll({
+            include: [
+                {
+                    model: Detalles_Pedidos,
+                    include: [Producto]
+                },
+                Usuario
+            ]
+        });
+        res.status(200).json(pedidos);
     } catch (error) {
-        return res.status(500).json({ message: "An error occurred", error }); // Handle error
+        res.status(500).json({ message: error });
     }
-};
-
-// Request handler to create a new order detail
-export const createOrderDetail: RequestHandler = async (req, res) => {
-    try {
-        await Detalles_Pedidos.create({ ...req.body }); // Create a new order detail
-        return res.status(200).json({ message: "Order detail created" }); // Return success message
-    } catch (error) {
-        return res.status(500).json({ message: "An error occurred", error }); // Handle error
-    }
-};
-
-// Request handler to delete an order detail
-export const deleteOrderDetail: RequestHandler = async (req, res) => {
-    const { idDetallePedido } = req.params; // Extract the order detail ID from request parameters
-    try {
-        await Detalles_Pedidos.destroy({ where: { idDetalles_Pedido: idDetallePedido } }); // Delete the order detail
-        return res.status(200).json({ message: "Order detail deleted" }); // Return success message
-    } catch (error) {
-        return res.status(500).json({ message: "An error occurred", error }); // Handle error
-    }
-};
+}
